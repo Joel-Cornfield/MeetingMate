@@ -24,3 +24,15 @@ export async function getMeetings(
         },
     });
 }
+
+export async function getMeetingById(
+    meetingId: string,
+    userId: string
+) { 
+    return prisma.meeting.findFirst({
+        where: {
+            userId, 
+            id: meetingId,
+        },
+    });
+}
