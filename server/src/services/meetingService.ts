@@ -11,3 +11,16 @@ export async function createMeeting(
         },
     });
 }
+
+export async function getMeetings(
+    userId: string
+) {
+    return prisma.meeting.findMany({
+        where: {
+            userId,
+        },
+        orderBy: {
+            createdAt: 'desc',
+        },
+    });
+}
