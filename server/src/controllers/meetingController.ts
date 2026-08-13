@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { AuthRequest } from "../middleware/authMiddleware.js";
-import { createMeeting } from "../services/meetingService.js";
+import { createMeeting, getMeetings } from "../services/meetingService.js";
 
 export async function create(
     req: AuthRequest,
@@ -25,6 +25,31 @@ export async function create(
 
         return res.status(201).json({
             meeting,
+        });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+}
+
+export async function getAll(
+    req: AuthRequest,
+    res: Response
+) {
+    try {
+        if (!req.userId) {
+            return res.status(401).json({
+                message: "Authentication required",
+            });
+        }
+
+        const meetings = await getMeetings(req.userId);
+
+        return res.status(200).json({
+            meetings,
         });
     } catch (error) {
         console.error(error);
