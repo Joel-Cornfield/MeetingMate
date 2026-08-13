@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
+import meetingRoutes from "./routes/meetingRoutes.js";
 import "./config/env.js";
 
 const app = express();
@@ -9,6 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/meetings", meetingRoutes);
 
 app.get("/", (_, res) => {
     res.json({
