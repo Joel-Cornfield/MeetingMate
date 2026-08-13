@@ -86,7 +86,7 @@ export async function getById(
             });
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             meeting,
         });
     } catch (error) {
