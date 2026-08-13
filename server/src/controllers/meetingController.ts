@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { AuthRequest } from "../middleware/authMiddleware.js";
-import { createMeeting, getMeetingById, getMeetings } from "../services/meetingService.js";
+import { createMeeting, deleteMeeting, getMeetingById, getMeetings } from "../services/meetingService.js";
 
 export async function create(
     req: AuthRequest,
@@ -89,6 +89,42 @@ export async function getById(
         return res.status(200).json({
             meeting,
         });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+}
+
+export async function remove(
+    req: AuthRequest,
+    res: Response
+) {
+    try {
+        if (!req.userId) {
+            return res.status(401).json({
+                message: "Authorization required",
+            });
+        }
+        const { id } = req.params;
+
+        if (typeof id !== "string") {
+            return res.status(400).json({
+                message: "Meeting ID is required",
+            });
+        }
+
+        const status = await deleteMeeting(id, req.userId);
+
+        if (!status) {
+            return res.status(404).json({
+                message: "Meeting not found",
+            });
+        }
+
+        return res.status(204).send();
     } catch (error) {
         console.error(error);
 

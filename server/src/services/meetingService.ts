@@ -36,3 +36,26 @@ export async function getMeetingById(
         },
     });
 }
+
+export async function deleteMeeting(
+    meetingId: string,
+    userId: string
+) { 
+    const meeting = await prisma.meeting.findFirst({
+        where: {
+            userId, 
+            id: meetingId,
+        },
+    });
+
+    if (!meeting) {
+        return null;
+    }
+
+    return prisma.meeting.delete({
+        where: {
+            id: meetingId,
+        },
+    });
+}
+
