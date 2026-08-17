@@ -34,7 +34,8 @@ const fileFilter: multer.Options["fileFilter"] = (
     if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(new Error("Only audio file types are allowed"));
+        // Passing a clean error string to Multer's callback
+        cb(new Error("LIMIT_UNSUPPORTED_FILE_TYPE"));
     }
 };
 
