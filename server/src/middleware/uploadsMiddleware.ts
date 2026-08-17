@@ -17,12 +17,8 @@ const storage = multer.diskStorage({
  * Multer middleware instance for handling secure audio uploads.
  * Configured with strict type filtering and a 50MB maximum payload limit.
  */
-const fileFilter: multer.Options["fileFilter"] = (
-    _req,
-    file,
-    cb
-) => {
-    const allowedTypes = [
+const fileFilter: multer.Options["fileFilter"] = (_req, file, cb) => {
+    const allowedTypes = new Set([
         "audio/mpeg",
         "audio/wav",
         "audio/x-wav",
@@ -30,13 +26,14 @@ const fileFilter: multer.Options["fileFilter"] = (
         "audio/webm",
         "audio/ogg",
         "audio/mp3",
-    ];
+        "audio/mpeg3",
+        "audio/x-mpeg-3",
+    ]);
 
-    if (allowedTypes.includes(file.mimetype)) {
+    if (allowedTypes.has(file.mimetype)) {
         cb(null, true);
     } else {
-        // Passing a clean error string to Multer's callback
-        cb(new Error("LIMIT_UNSUPPORTED_FILE_TYPE"));
+        cb(new Error(`LIMIT_UNSUPPORTED_FILE_TYPE: ${file.mimetype}`));
     }
 };
 
