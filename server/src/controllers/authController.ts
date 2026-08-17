@@ -3,6 +3,10 @@ import { registerUser, loginUser } from "../services/authService.js";
 import { AuthRequest } from "../middleware/authMiddleware.js";
 import prisma from "../services/prisma.js";
 
+/**
+ * POST /api/auth/register
+ * Registers a new user account in the system.
+ */
 export async function register(req: Request, res: Response) {
     try {
         const { email, password } = req.body;
@@ -36,6 +40,10 @@ export async function register(req: Request, res: Response) {
     }
 }
 
+/**
+ * POST /api/auth/login
+ * Logs in an existing user and returns an authentication payload.
+ */
 export async function login(req: Request, res: Response) {
     try {
         const { email, password } = req.body;
@@ -67,6 +75,10 @@ export async function login(req: Request, res: Response) {
     }
 }
 
+/**
+ * GET /api/auth/me
+ * Fetches the active user's profile, explicitly omitting sensitive security fields.
+ */
 export async function getCurrentUser(
     req: AuthRequest,
     res: Response
