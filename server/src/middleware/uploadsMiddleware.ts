@@ -29,6 +29,7 @@ const fileFilter: multer.Options["fileFilter"] = (
         "audio/mp4",
         "audio/webm",
         "audio/ogg",
+        "audio/mp3",
     ];
 
     if (allowedTypes.includes(file.mimetype)) {
