@@ -11,7 +11,9 @@ import { spawn } from "child_process";
  */
 export function transcribeAudio(audioPath: string): Promise<string> {
     return new Promise((resolve, reject) => {
-        const projectRoot = path.resolve(".");
+        const serverRoot = process.cwd();
+
+        const projectRoot = path.resolve(serverRoot, "..");
 
         const scriptPath = path.join(
             projectRoot,
@@ -24,10 +26,10 @@ export function transcribeAudio(audioPath: string): Promise<string> {
         );
 
         const absoluteAudioPath = path.resolve(
-            projectRoot, audioPath
+            serverRoot, audioPath
         );
 
-        const process = spawn(
+        const python_process = spawn(
             pythonPath,
             [scriptPath, absoluteAudioPath]
         );
@@ -36,16 +38,16 @@ export function transcribeAudio(audioPath: string): Promise<string> {
         let errorOutput = "";
 
         // Stream chunks of text whenever the Python script prints to the console (sys.stdout)
-        process.stdout.on("data", (data) => {
+        python_process.stdout.on("data", (data) => {
             output += data.toString();
         });
 
         // Stream chunks of text if the Python script throws an unhandled exception or logs errors (sys.stderr)
-        process.stderr.on("data", (data) => {
+        python_process.stderr.on("data", (data) => {
             errorOutput += data.toString();
         });
 
-        process.on("close", (code) => {
+        python_process.on("close", (code) => {
             if (code === 0) {
                 // return the captured console text back to the main application loop
                 resolve(output.trim());
@@ -59,7 +61,7 @@ export function transcribeAudio(audioPath: string): Promise<string> {
         });
 
         // Triggered if the operating system cannot find or run the Python executable file itself
-        process.on("error", (error) => {
+        python_process.on("error", (error) => {
             reject(error);
         });
     });
