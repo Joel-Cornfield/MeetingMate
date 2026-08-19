@@ -11,13 +11,25 @@ import { spawn } from "child_process";
  */
 export function transcribeAudio(audioPath: string): Promise<string> {
     return new Promise((resolve, reject) => {
-        const scriptPath = path.resolve(
+        const projectRoot = path.resolve(".");
+
+        const scriptPath = path.join(
+            projectRoot,
             "transcription/transcribe.py"
         );
 
+        const pythonPath = path.join(
+            projectRoot,
+            "transcription/.venv/bin/python"
+        );
+
+        const absoluteAudioPath = path.resolve(
+            projectRoot, audioPath
+        );
+
         const process = spawn(
-            "transcription/.venv/bin/python",
-            [scriptPath, audioPath]
+            pythonPath,
+            [scriptPath, absoluteAudioPath]
         );
 
         let output = "";
