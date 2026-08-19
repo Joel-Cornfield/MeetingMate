@@ -134,3 +134,27 @@ export async function getAudio(
         }
     });
 }
+
+/**
+ * Updates a meeting's trancript string after validating resource ownership
+ * Uses a scoped update constraint to prevent unauthorized modifications
+ * @param meetingId - The ID of the target meeting
+ * @param userId - The ID of the requesting user
+ * @param transcript - The processed text content to be saved 
+ * @returns A prisma batch object containing the count of affected rows (0 or 1) 
+ */
+export async function saveTranscript(
+    meetingId: string,
+    userId: string,
+    transcript: string,
+) {
+    return prisma.meeting.updateMany({
+        where: {
+            id: meetingId,
+            userId,
+        },
+        data: {
+            transcript,
+        }
+    });
+}
