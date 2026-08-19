@@ -112,3 +112,25 @@ export async function attachAudio(
         },
     });
 }
+
+/**
+ * Safely fetches the audio asset metadata for a meeting, ensuring resource ownership.
+ * @param meetingId - The ID of the target meeting
+ * @param userId - The ID of the requesting user
+ * @returns An object containing the meeting ID and audio file path if found, or null if unauthorized/not found
+ */
+export async function getAudio(
+    meetingId: string,
+    userId: string,
+) {
+    return prisma.meeting.findFirst({
+        where: {
+            userId,
+            id: meetingId,
+        },
+        select: {
+            id: true,
+            audioPath: true,
+        }
+    });
+}
