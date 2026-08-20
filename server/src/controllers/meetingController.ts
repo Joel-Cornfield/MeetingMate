@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { AuthRequest } from "../middleware/authMiddleware.js";
-import { createMeeting, deleteMeeting, getMeetingById, getMeetings, attachAudio, getAudio, saveTranscript, getTranscript } from "../services/meetingService.js";
+import { createMeeting, deleteMeeting, getMeetingById, getMeetings, attachAudio, getAudio, saveTranscript, getTranscript, saveSummary } from "../services/meetingService.js";
 import { transcribeAudio } from "../services/transcriptionService.js";
 import { generateMeetingSummary } from "../services/aiService.js";
 
@@ -278,7 +278,17 @@ export async function summarize(
 
         const result = await generateMeetingSummary(meeting.transcript);
 
-        return res.status(200).json(result);
+        const saved = await saveSummary(id, req.userId, result.summary, result.actionItems);
+
+        if (!saved) {
+            return res.status(404).json({
+                message: "Meeting not found",
+            });
+        }
+
+        return res.status(200).json({
+            meeting: saved,
+        })
     } catch (error) {
         console.error(error);
         res.status(500).json({

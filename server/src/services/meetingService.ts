@@ -173,3 +173,57 @@ export async function getTranscript(
         }
     });
 }
+
+export async function saveSummary(
+    meetingId: string,
+    userId: string,
+    summary: string,
+    actionItems: string[]
+) {
+    const meeting = prisma.meeting.findFirst({
+        where: {
+            id: meetingId,
+            userId,
+        },
+    });
+
+    if (!meeting) {
+        return null;
+    }
+
+    await prisma.$transaction(async (tx) => {
+        await tx.meeting.update({
+            where: {
+                id: meetingId,
+            },
+            data: {
+                summary
+            }
+        });
+
+        // Delete previous action items
+        await tx.actionItem.deleteMany({
+            where: {
+                id: meetingId,
+            },
+        });
+
+        if (actionItems.length > 0) {
+            await tx.actionItem.createMany({
+                data: actionItems.map((content) => ({
+                    content,
+                    meetingId,
+                })),
+            });
+        }
+    });
+
+    return prisma.meeting.findUnique({
+        where: {
+            id: meetingId
+        },
+        include: {
+            actionItems: true,
+        },
+    });
+}
