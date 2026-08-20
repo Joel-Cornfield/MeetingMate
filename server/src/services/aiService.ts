@@ -27,7 +27,7 @@ export async function generateMeetingSummary(
     Required JSON format:
     {
         "summary": "string",
-        "action items": [
+        "actionItems": [
             "string"
         ]
     }
