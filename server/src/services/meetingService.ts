@@ -180,7 +180,7 @@ export async function saveSummary(
     summary: string,
     actionItems: string[]
 ) {
-    const meeting = prisma.meeting.findFirst({
+    const meeting = await prisma.meeting.findFirst({
         where: {
             id: meetingId,
             userId,
@@ -204,7 +204,7 @@ export async function saveSummary(
         // Delete previous action items
         await tx.actionItem.deleteMany({
             where: {
-                id: meetingId,
+                meetingId,
             },
         });
 
