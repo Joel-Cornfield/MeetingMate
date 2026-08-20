@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { summarize, create, getAll, getById, remove, transcribe, upload } from "../controllers/meetingController.js";
+import { summarise, create, getAll, getById, remove, transcribe, upload } from "../controllers/meetingController.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 import { uploadAudio } from "../middleware/uploadsMiddleware.js";
 
@@ -11,6 +11,6 @@ router.get("/:id", authenticate, getById);
 router.delete("/:id", authenticate, remove);
 router.post("/:id/audio", authenticate, uploadAudio.single("audio"), upload);
 router.post("/:id/transcribe", authenticate, transcribe);
-router.post("/:id/summarize", authenticate, summarize);
+router.post("/:id/summarise", authenticate, summarise);
 
 export default router;

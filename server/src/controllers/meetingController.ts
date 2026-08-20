@@ -195,6 +195,10 @@ export async function upload(
     }
 }
 
+/**
+ * POST /api/meetings/:id/transcribe
+ * Transcribes an audio file and saves the the resulting text into the database 
+ */
 export async function transcribe(
     req: AuthRequest,
     res: Response
@@ -243,7 +247,11 @@ export async function transcribe(
     }
 }
 
-export async function summarize(
+/**
+ * POST /api/meetings/:id/summarise
+ * Generates a summary for the provided transcript and saves the corresponding summary and action items into the database
+ */
+export async function summarise(
     req: AuthRequest,
     res: Response
 ) {

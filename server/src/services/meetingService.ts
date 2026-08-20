@@ -136,8 +136,8 @@ export async function getAudio(
 }
 
 /**
- * Updates a meeting's trancript string after validating resource ownership
- * Uses a scoped update constraint to prevent unauthorized modifications
+ * Updates a meeting's trancript string after validating resource ownership.
+ * Uses a scoped update constraint to prevent unauthorized modifications.
  * @param meetingId - The ID of the target meeting
  * @param userId - The ID of the requesting user
  * @param transcript - The processed text content to be saved 
@@ -159,6 +159,12 @@ export async function saveTranscript(
     });
 }
 
+/**
+ * Retrieves a meeting's transcript after verifying ownership.
+ * @param meetingId - The ID of the target meeting
+ * @param userId - The ID of the requesting user
+ * @returns An object containing the transcript if found, or null if unauthorized/not found 
+ */
 export async function getTranscript(
     meetingId: string,
     userId: string,
@@ -174,6 +180,15 @@ export async function getTranscript(
     });
 }
 
+/**
+ * Saves a meeting summary and overrides any pre-existing action items within a database transaction.
+ * Verifies meeting ownership before proceeding.
+ * @param meetingId - The ID of the target meeting
+ * @param userId - The ID of the requesting user
+ * @param summary - The meeting text summary to save
+ * @param actionItems - An array of new action item strings to save 
+ * @returns The updated meeting object with its action items, or null if meeting not found
+ */
 export async function saveSummary(
     meetingId: string,
     userId: string,
