@@ -1,8 +1,8 @@
 import { Response } from "express";
 import { AuthRequest } from "../middleware/authMiddleware.js";
-import { createMeeting, deleteMeeting, getMeetingById, getMeetings, attachAudio, getAudio, saveTranscript } from "../services/meetingService.js";
-import { uploadAudio } from "../middleware/uploadsMiddleware.js";
+import { createMeeting, deleteMeeting, getMeetingById, getMeetings, attachAudio, getAudio, saveTranscript, getTranscript } from "../services/meetingService.js";
 import { transcribeAudio } from "../services/transcriptionService.js";
+import { generateMeetingSummary } from "../services/aiService.js";
 
 /**
  * POST /api/meetings
@@ -235,6 +235,50 @@ export async function transcribe(
         return res.status(200).json({
             transcript,
         });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+}
+
+export async function summarize(
+    req: AuthRequest,
+    res: Response
+) {
+    try {
+        if (!req.userId) {
+            return res.status(401).json({
+                message: "Authorization required",
+            });
+        }
+        
+        const { id } = req.params;
+
+        if (typeof id !== "string") {
+            return res.status(400).json({
+                message: "Meeting ID is required",
+            });
+        }
+
+        const meeting = await getTranscript(id, req.userId);
+
+        if (!meeting) {
+            return res.status(404).json({
+                message: "Meeting not found",
+            });
+        }
+
+        if (!meeting.transcript) {
+            return res.status(404).json({
+                message: "Meeting does not have a transcript",
+            });
+        }
+
+        const result = await generateMeetingSummary(meeting.transcript);
+
+        return res.status(200).json(result);
     } catch (error) {
         console.error(error);
         res.status(500).json({

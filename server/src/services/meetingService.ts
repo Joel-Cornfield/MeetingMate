@@ -158,3 +158,18 @@ export async function saveTranscript(
         }
     });
 }
+
+export async function getTranscript(
+    meetingId: string,
+    userId: string,
+) {
+    return prisma.meeting.findFirst({
+        where: {
+            id: meetingId,
+            userId,
+        },
+        select: {
+            transcript: true,
+        }
+    });
+}
