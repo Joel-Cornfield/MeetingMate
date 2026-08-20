@@ -112,3 +112,133 @@ export async function attachAudio(
         },
     });
 }
+
+/**
+ * Safely fetches the audio asset metadata for a meeting, ensuring resource ownership.
+ * @param meetingId - The ID of the target meeting
+ * @param userId - The ID of the requesting user
+ * @returns An object containing the meeting ID and audio file path if found, or null if unauthorized/not found
+ */
+export async function getAudio(
+    meetingId: string,
+    userId: string,
+) {
+    return prisma.meeting.findFirst({
+        where: {
+            userId,
+            id: meetingId,
+        },
+        select: {
+            id: true,
+            audioPath: true,
+        }
+    });
+}
+
+/**
+ * Updates a meeting's trancript string after validating resource ownership.
+ * Uses a scoped update constraint to prevent unauthorized modifications.
+ * @param meetingId - The ID of the target meeting
+ * @param userId - The ID of the requesting user
+ * @param transcript - The processed text content to be saved 
+ * @returns A prisma batch object containing the count of affected rows (0 or 1) 
+ */
+export async function saveTranscript(
+    meetingId: string,
+    userId: string,
+    transcript: string,
+) {
+    return prisma.meeting.updateMany({
+        where: {
+            id: meetingId,
+            userId,
+        },
+        data: {
+            transcript,
+        }
+    });
+}
+
+/**
+ * Retrieves a meeting's transcript after verifying ownership.
+ * @param meetingId - The ID of the target meeting
+ * @param userId - The ID of the requesting user
+ * @returns An object containing the transcript if found, or null if unauthorized/not found 
+ */
+export async function getTranscript(
+    meetingId: string,
+    userId: string,
+) {
+    return prisma.meeting.findFirst({
+        where: {
+            id: meetingId,
+            userId,
+        },
+        select: {
+            transcript: true,
+        }
+    });
+}
+
+/**
+ * Saves a meeting summary and overrides any pre-existing action items within a database transaction.
+ * Verifies meeting ownership before proceeding.
+ * @param meetingId - The ID of the target meeting
+ * @param userId - The ID of the requesting user
+ * @param summary - The meeting text summary to save
+ * @param actionItems - An array of new action item strings to save 
+ * @returns The updated meeting object with its action items, or null if meeting not found
+ */
+export async function saveSummary(
+    meetingId: string,
+    userId: string,
+    summary: string,
+    actionItems: string[]
+) {
+    const meeting = await prisma.meeting.findFirst({
+        where: {
+            id: meetingId,
+            userId,
+        },
+    });
+
+    if (!meeting) {
+        return null;
+    }
+
+    await prisma.$transaction(async (tx) => {
+        await tx.meeting.update({
+            where: {
+                id: meetingId,
+            },
+            data: {
+                summary
+            }
+        });
+
+        // Delete previous action items
+        await tx.actionItem.deleteMany({
+            where: {
+                meetingId,
+            },
+        });
+
+        if (actionItems.length > 0) {
+            await tx.actionItem.createMany({
+                data: actionItems.map((content) => ({
+                    content,
+                    meetingId,
+                })),
+            });
+        }
+    });
+
+    return prisma.meeting.findUnique({
+        where: {
+            id: meetingId
+        },
+        include: {
+            actionItems: true,
+        },
+    });
+}
