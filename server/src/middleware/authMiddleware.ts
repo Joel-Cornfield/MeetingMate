@@ -14,8 +14,10 @@ interface JwtPayload {
 }
 
 /**
- * Express middleware to validate Bearer tokens and enforce route protection.
- * Extracts the JWT, verifies its signature, and injects the userId into the request payload.
+ * Express middleware to validate JWTs stored in an HttpOnly cookie.
+ *
+ * The browser automatically sends the cookie with requests.
+ * The JWT is never exposed to client-side JavaScript.
  */
 export function authenticate(
     req: AuthRequest,
