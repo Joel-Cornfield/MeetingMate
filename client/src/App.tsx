@@ -1,14 +1,49 @@
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import './App.css'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import Meetings from './pages/Meetings'
+import ProtectedRoute from './components/ProtectedRoute'
 
-function App() {
-
+export default function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-4xl font-bold">
-        MeetingMate
-      </h1>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route 
+          path="/login"
+          element={<Login />}
+        />
+        <Route 
+          path="/register"
+          element={<Register />}
+        />
+        <Route 
+          path="/meetings"
+          element={
+            <ProtectedRoute>
+                <Meetings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <Navigate 
+              to="/meetings"
+              replace
+            />
+          }
+        />
+        <Route
+          path="*"
+          element={
+              <Navigate
+                  to="/meetings"
+                  replace
+              />
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  );
 }
-
-export default App
