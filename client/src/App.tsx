@@ -3,6 +3,7 @@ import './App.css'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Meetings from './pages/Meetings'
+import Meeting from './pages/Meeting'
 import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
@@ -22,6 +23,14 @@ export default function App() {
           element={
             <ProtectedRoute>
                 <Meetings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/meetings/:id"
+          element={
+            <ProtectedRoute>
+              <Meeting />
             </ProtectedRoute>
           }
         />
