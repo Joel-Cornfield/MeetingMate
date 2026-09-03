@@ -143,6 +143,10 @@ export async function getCurrentUser(
     }
 }
 
+/**
+ * POST /api/auth/logout
+ * Logs out the user by clearing the authentication JWT cookie.
+ */
 export async function logout(
     req: Request,
     res: Response
