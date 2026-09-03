@@ -29,10 +29,15 @@ export async function registerUser(email: string, password: string) {
         },
     });
 
+    const token = generateToken(user.id);
+
     return {
-        id: user.id,
-        email: user.email,
-        createdAt: user.createdAt,
+        token,
+        user: {
+            id: user.id,
+            email: user.email,
+            createdAt: user.createdAt,
+        }
     };
 }
 
