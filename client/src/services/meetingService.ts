@@ -19,17 +19,17 @@ export interface ActionItem {
 }
 
 export async function getMeetings() {
-     const response = await api.get<Meeting[]>("/meetings");
+     const response = await api.get<{ meetings: Meeting[] }>("/meetings");
 
-     return response.data;
+     return response.data.meetings;
 }
 
 export async function createMeeting(title: string) {
-    const response = await api.post<Meeting>("/meetings", {
+    const response = await api.post<{ meeting: Meeting }>("/meetings", {
         title,
     });
 
-    return response.data;
+    return response.data.meeting;
 }
 
 export async function deleteMeeting(id: string) {
