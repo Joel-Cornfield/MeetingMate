@@ -37,8 +37,8 @@ export async function deleteMeeting(id: string) {
 }
 
 export async function getMeeting(id: string) {
-    const response = await api.get<Meeting>(`/meetings/${id}`);
+    const response = await api.get<{ meeting: Meeting }>(`/meetings/${id}`);
 
-    return response.data;
+    return response.data.meeting;
 }
 
