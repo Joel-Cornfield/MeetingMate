@@ -42,3 +42,18 @@ export async function getMeeting(id: string) {
     return response.data.meeting;
 }
 
+export async function uploadAudio(meetingId: string, file: File) {
+    const formData = new FormData();
+
+    formData.append("audio", file);
+
+    const response = await api.post(`/meetings/${meetingId}/audio`, formData);
+
+    return response.data;
+}
+
+export async function transcribeMeeting(meetingId: string) {
+    const response = await api.post(`/meetings/${meetingId}/transcribe`);
+    
+    return response.data;
+}
