@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { Link, useParams } from "react-router";
 
 import {
     getMeeting,
+    transcribeMeeting,
+    uploadAudio,
     type Meeting as MeetingType,
 } from "../services/meetingService";
 import axios from "axios";
@@ -11,6 +13,10 @@ export default function Meeting() {
     const { id } = useParams();
 
     const [meeting, setMeeting] = useState<MeetingType | null>(null);
+
+    const [uploading, setUploading] = useState(false);
+    const [transcribing, setTranscribing] = useState(false);
+    const [actionError, setActionError] = useState("");
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -43,6 +49,67 @@ export default function Meeting() {
 
         loadMeeting();
     },[id]);
+
+    async function handleAudioUpload(
+        event: ChangeEvent<HTMLInputElement>
+    ) {
+        const file = event.target.files?.[0];
+
+        if (!file || !id) {
+            return;
+        }
+
+        setActionError("");
+        setUploading(true);
+
+        try {
+            await uploadAudio(id, file);
+
+            const updatedMeeting = await getMeeting(id);
+
+            setMeeting(updatedMeeting);
+        } catch (error) {
+            console.error(error);
+
+            if (axios.isAxiosError(error)) {
+                setActionError(error.response?.data?.message || "Failed to upload audio");
+            } else {
+                setActionError("Failed to upload audio");
+            }
+        } finally {
+            setUploading(false);
+
+            // Allow user to select same file again
+            event.target.value = "";
+        }
+    }
+
+    async function handleTranscribe() {
+        if (!id) {
+            return;
+        }
+
+        setActionError("");
+        setTranscribing(true);
+
+        try {
+            await transcribeMeeting(id);
+
+            const updatedMeeting = await getMeeting(id);
+
+            setMeeting(updatedMeeting);
+        } catch (error) {
+            console.error(error);
+
+            if (axios.isAxiosError(error)) {
+                setActionError(error.response?.data?.message || "Failed to transcribe meeting");
+            } else {
+                setActionError("Failed to transcribe meeting");
+            }
+        } finally {
+            setTranscribing(false);
+        }
+    }
 
     if (loading) {
         return <p>Loading meeting...</p>;
@@ -77,13 +144,41 @@ export default function Meeting() {
                 <h2>Audio</h2>
 
                 {meeting.audioPath ? (
-                    <p>
-                        Audio Uploaded ✓
-                    </p>
+                    <>
+                        <p>
+                            Audio Uploaded ✓
+                        </p>
+                        <button
+                            onClick={handleTranscribe}
+                            disabled={transcribing}
+                        >
+                            {transcribing 
+                                ? "Transcribing..." 
+                                : "Transcribe"}
+                        </button>
+                    </>
                 ) : (
-                    <p>
-                        No audio uploaded yet.
-                    </p>
+                    <>
+                        <p>
+                            No audio uploaded yet.
+                        </p>
+                        <label htmlFor="audio">
+                            Upload Audio
+                        </label>
+                        <input
+                            id="audio"
+                            type="file"
+                            accept="audio/*.mp3,.wav,.m4a"
+                            onChange={handleAudioUpload}
+                            disabled={uploading}
+                        />
+
+                        {uploading && (
+                            <p>
+                                Uploading...
+                            </p>
+                        )}
+                    </>
                 )}
             </section>
 
@@ -94,9 +189,13 @@ export default function Meeting() {
                     <p>
                         {meeting.transcript}
                     </p>
+                ) : meeting.audioPath ? (
+                    <p>
+                        Audio is ready to transcribe.
+                    </p>
                 ) : (
                     <p>
-                        No transcript yet.
+                        Upload an audio file to transcribe it.
                     </p>
                 )} 
             </section>
