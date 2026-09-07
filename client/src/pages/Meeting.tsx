@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router";
 
 import {
     getMeeting,
+    summariseMeeting,
     transcribeMeeting,
     uploadAudio,
     type Meeting as MeetingType,
@@ -16,6 +17,7 @@ export default function Meeting() {
 
     const [uploading, setUploading] = useState(false);
     const [transcribing, setTranscribing] = useState(false);
+    const [summarising, setSummarising] = useState(false);
     const [actionError, setActionError] = useState("");
 
     const [loading, setLoading] = useState(true);
@@ -111,6 +113,31 @@ export default function Meeting() {
         }
     }
 
+    async function handleSummarise() {
+        if (!id || !meeting?.transcript) {
+        return;
+    }
+
+    try {
+        setSummarising(true);
+        setActionError("");
+
+        const updatedMeeting = await summariseMeeting(id);
+
+        setMeeting(updatedMeeting);
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            setActionError(
+                error.response?.data?.message || "Failed to generate meeting notes"
+            );
+        } else {
+            setActionError("Failed to generate meeting notes");
+        }
+    } finally {
+        setSummarising(false);
+    }
+    }
+
     if (loading) {
         return <p>Loading meeting...</p>;
     }
@@ -139,6 +166,12 @@ export default function Meeting() {
                     meeting.createdAt
                 ).toLocaleDateString()}
             </p>
+
+            {actionError && (
+                <p className="mt-4 text-sm text-red-600">
+                    {actionError}
+                </p>
+            )}
 
             <section>
                 <h2>Audio</h2>
@@ -180,41 +213,46 @@ export default function Meeting() {
                         )}
                     </>
                 )}
-                {actionError && (
-                    <p>{actionError}</p>
-                )}
             </section>
 
             <section>
                 <h2>Transcript</h2>
 
                 {meeting.transcript ? (
-                    <p>
-                        {meeting.transcript}
-                    </p>
-                ) : meeting.audioPath ? (
-                    <p>
-                        Audio is ready to transcribe.
-                    </p>
+                    <>
+                        <div>
+                            {meeting.transcript}
+                        </div>
+
+                        <button
+                            onClick={handleSummarise}
+                            disabled={summarising}
+                        >
+                            {summarising
+                                ? "Generating Notes..."
+                                : "Generate Meeting Notes"
+                            }
+                        </button>
+                    </>
                 ) : (
                     <p>
-                        Upload an audio file to transcribe it.
+                        No transcript yet.
                     </p>
-                )} 
+                )}
             </section>
 
             <section>
                 <h2>Summary</h2>
 
                 {meeting.summary ? (
-                    <p>
-                        {meeting.transcript}
-                    </p>
+                    <div>
+                        {meeting.summary}
+                    </div>
                 ) : (
                     <p>
                         No summary yet.
                     </p>
-                )} 
+                )}
             </section>
 
             <section>
