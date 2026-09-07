@@ -57,3 +57,9 @@ export async function transcribeMeeting(meetingId: string) {
     
     return response.data;
 }
+
+export async function summariseMeeting(meetingId: string) {
+    const response = await api.post(`/meetings/${meetingId}/summarise`);
+    
+    return response.data;
+}
