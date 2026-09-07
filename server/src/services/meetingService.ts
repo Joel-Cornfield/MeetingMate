@@ -212,8 +212,8 @@ export async function saveSummary(
                 id: meetingId,
             },
             data: {
-                summary
-            }
+                summary,
+            },
         });
 
         // Delete previous action items
@@ -235,7 +235,7 @@ export async function saveSummary(
 
     return prisma.meeting.findUnique({
         where: {
-            id: meetingId
+            id: meetingId,
         },
         include: {
             actionItems: true,
