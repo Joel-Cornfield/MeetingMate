@@ -180,6 +180,9 @@ export default function Meeting() {
                         )}
                     </>
                 )}
+                {actionError && (
+                    <p>{actionError}</p>
+                )}
             </section>
 
             <section>
