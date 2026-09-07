@@ -286,7 +286,12 @@ export async function summarise(
 
         const result = await generateMeetingSummary(meeting.transcript);
 
-        const saved = await saveSummary(id, req.userId, result.summary, result.actionItems);
+        const saved = await saveSummary(
+            id,
+            req.userId,
+            result.summary,
+            result.actionItems
+        );
 
         if (!saved) {
             return res.status(404).json({
