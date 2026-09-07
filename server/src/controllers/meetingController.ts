@@ -279,7 +279,7 @@ export async function summarise(
         }
 
         if (!meeting.transcript) {
-            return res.status(404).json({
+            return res.status(400).json({
                 message: "Meeting does not have a transcript",
             });
         }
