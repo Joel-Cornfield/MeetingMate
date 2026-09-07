@@ -38,7 +38,7 @@ export async function generateMeetingSummary(
     const response = await fetch(OLLAMA_URL, {
         method: "POST",
         headers: {
-            'Content-type': 'application-json',
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify({
             model: OLLAMA_MODEL,
