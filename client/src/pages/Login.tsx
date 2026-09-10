@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import axios from "axios";
+import { PageShell, Panel, PrimaryButton, TextInput } from "../components/ui";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function Login() {
         e: React.SubmitEvent<HTMLFormElement>
     ) {
         e.preventDefault();
-        
+
         setError("");
         setLoading(true);
 
@@ -37,47 +38,62 @@ export default function Login() {
     }
 
     return (
-        <div>
-            <h1>MeetingMate</h1>
-            <h2>Login</h2>
+        <PageShell>
+            <div className="mx-auto max-w-md pt-16">
+                <Panel className="p-8">
+                    <div className="mb-8 text-center">
+                        <h1 className="text-3xl font-bold tracking-tight text-white">MeetingMate</h1>
+                        <p className="mt-2 text-sm text-slate-400">Turn meetings into action</p>
+                    </div>
 
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="email">Email</label>
-                    <input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="password">Password</label>
-                    <input 
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div>
+                            <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-200">
+                                Email
+                            </label>
+                            <TextInput
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="you@example.com"
+                                required
+                            />
+                        </div>
 
-                {error && <p>{error}</p>}
+                        <div>
+                            <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-200">
+                                Password
+                            </label>
+                            <TextInput
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                required
+                            />
+                        </div>
 
-                <button 
-                    type="submit"
-                    disabled={loading}
-                >
-                    {loading ? "Logging in..." : "Login"}
-                </button>
-            </form>
-            <p>
-                Don't have an account?{" "}
-                <Link to="/register">
-                    Register
-                </Link>
-            </p>
-        </div>
+                        {error && (
+                            <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                                {error}
+                            </p>
+                        )}
+
+                        <PrimaryButton type="submit" disabled={loading} className="w-full">
+                            {loading ? "Logging in..." : "Login"}
+                        </PrimaryButton>
+                    </form>
+
+                    <p className="mt-6 text-center text-sm text-slate-400">
+                        Don't have an account? {" "}
+                        <Link to="/register" className="font-medium text-violet-300 hover:text-violet-200">
+                            Register
+                        </Link>
+                    </p>
+                </Panel>
+            </div>
+        </PageShell>
     )
 }
