@@ -159,7 +159,7 @@ export default function Meetings() {
                                     <div className="flex gap-2">
                                         <Link
                                             to={`/meetings/${meeting.id}`}
-                                            className="flex-1 rounded-xl bg-violet-600 px-3 py-2 text-center text-sm font-medium text-white transition hover:bg-violet-500"
+                                            className="flex flex-1 items-center justify-center rounded-xl bg-violet-600 px-3 py-2 text-center text-sm font-medium text-white transition hover:bg-violet-500"
                                         >
                                             Open
                                         </Link>
