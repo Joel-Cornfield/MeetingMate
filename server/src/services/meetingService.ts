@@ -31,6 +31,9 @@ export async function getMeetings(
         orderBy: {
             createdAt: 'desc',
         },
+        include: {
+            actionItems: true,
+        },
     });
 }
 
@@ -47,6 +50,9 @@ export async function getMeetingById(
         where: {
             userId, 
             id: meetingId,
+        },
+        include: {
+            actionItems: true,
         },
     });
 }
