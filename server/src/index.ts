@@ -9,9 +9,21 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
+const allowedOrigins = [
+    process.env.CLIENT_URL,
+    process.env.FRONTEND_URL,
+    "http://localhost:5173",
+].filter(Boolean);
+
 app.use(
     cors({
-        origin: "http://localhost:5173",
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+                return;
+            }
+            callback(new Error("Not allowed by CORS"));
+        },
         credentials: true,
     })
 );
