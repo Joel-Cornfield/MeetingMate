@@ -279,14 +279,19 @@ export async function summarise(
         }
 
         if (!meeting.transcript) {
-            return res.status(404).json({
+            return res.status(400).json({
                 message: "Meeting does not have a transcript",
             });
         }
 
         const result = await generateMeetingSummary(meeting.transcript);
 
-        const saved = await saveSummary(id, req.userId, result.summary, result.actionItems);
+        const saved = await saveSummary(
+            id,
+            req.userId,
+            result.summary,
+            result.actionItems
+        );
 
         if (!saved) {
             return res.status(404).json({

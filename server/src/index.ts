@@ -5,11 +5,18 @@ import meetingRoutes from "./routes/meetingRoutes.js";
 import "./config/env.js";
 import { Request, Response, NextFunction } from "express";
 import multer from "multer";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
-app.use(cors());
+app.use(
+    cors({
+        origin: "http://localhost:5173",
+        credentials: true,
+    })
+);
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/meetings", meetingRoutes);

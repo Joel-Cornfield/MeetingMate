@@ -31,6 +31,9 @@ export async function getMeetings(
         orderBy: {
             createdAt: 'desc',
         },
+        include: {
+            actionItems: true,
+        },
     });
 }
 
@@ -47,6 +50,9 @@ export async function getMeetingById(
         where: {
             userId, 
             id: meetingId,
+        },
+        include: {
+            actionItems: true,
         },
     });
 }
@@ -212,8 +218,8 @@ export async function saveSummary(
                 id: meetingId,
             },
             data: {
-                summary
-            }
+                summary,
+            },
         });
 
         // Delete previous action items
@@ -235,7 +241,7 @@ export async function saveSummary(
 
     return prisma.meeting.findUnique({
         where: {
-            id: meetingId
+            id: meetingId,
         },
         include: {
             actionItems: true,
