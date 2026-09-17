@@ -1,18 +1,9 @@
 import path from "path";
 import { spawn } from "child_process";
 
-/**
- * Spawns an isolated Python subprocess to handle resource-heavy audio transcription.
- * Offloads execution to a Python virtual environment script to capture stdout transcription text.
- * 
- * @param audioPath - Absolute or relative path to the source audio file
- * @returns A promise that resolves with the full trimmed transcript string
- * @throws {Error} If the Python runtime fails, exits with a non-zero code, or encounters an internal crash
- */
 export function transcribeAudio(audioPath: string): Promise<string> {
     return new Promise((resolve, reject) => {
         const serverRoot = process.cwd();
-
         const projectRoot = path.resolve(serverRoot, "..");
 
         const scriptPath = path.join(
@@ -28,7 +19,12 @@ export function transcribeAudio(audioPath: string): Promise<string> {
         const pythonPath =
             process.env.PYTHON_PATH || "python3";
 
-        const python_process = spawn(
+        console.log("Starting transcription...");
+        console.log("Python:", pythonPath);
+        console.log("Script:", scriptPath);
+        console.log("Audio:", absoluteAudioPath);
+
+        const pythonProcess = spawn(
             pythonPath,
             [scriptPath, absoluteAudioPath]
         );
@@ -36,31 +32,39 @@ export function transcribeAudio(audioPath: string): Promise<string> {
         let output = "";
         let errorOutput = "";
 
-        // Stream chunks of text whenever the Python script prints to the console (sys.stdout)
-        python_process.stdout.on("data", (data) => {
-            output += data.toString();
+        pythonProcess.stdout.on("data", (data) => {
+            const text = data.toString();
+
+            output += text;
+
+            console.log("Python stdout:", text);
         });
 
-        // Stream chunks of text if the Python script throws an unhandled exception or logs errors (sys.stderr)
-        python_process.stderr.on("data", (data) => {
-            errorOutput += data.toString();
+        pythonProcess.stderr.on("data", (data) => {
+            const text = data.toString();
+
+            errorOutput += text;
+
+            console.log("Python stderr:", text);
         });
 
-        python_process.on("close", (code) => {
+        pythonProcess.on("close", (code) => {
+            console.log("Python process exited with code:", code);
+
             if (code === 0) {
-                // return the captured console text back to the main application loop
                 resolve(output.trim());
             } else {
                 reject(
                     new Error(
-                        errorOutput || `Transcription failed with code ${code}`
+                        errorOutput ||
+                        `Transcription failed with code ${code}`
                     )
                 );
             }
         });
 
-        // Triggered if the operating system cannot find or run the Python executable file itself
-        python_process.on("error", (error) => {
+        pythonProcess.on("error", (error) => {
+            console.error("Failed to start Python:", error);
             reject(error);
         });
     });
