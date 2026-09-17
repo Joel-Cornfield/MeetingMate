@@ -232,12 +232,29 @@ export async function transcribe(
             });
         }
 
-        const transcript = await transcribeAudio(meeting.audioPath);
+        // Start transcription in the background.
+        transcribeAudio(meeting.audioPath)
+            .then(async (transcript) => {
+                await saveTranscript(
+                    id, 
+                    req.userId!,
+                    transcript
+                );
 
-        await saveTranscript(id, req.userId, transcript);
+                console.log(
+                    `Transcription completed for meeting ${id}`
+                );
+            })
+            .catch((error) => {
+                console.error(
+                    `Transcription failed for meeting ${id}:`,
+                    error
+                );
+            })
 
-        return res.status(200).json({
-            transcript,
+        // Respond immediately instead of waiting for Whisper.
+        return res.status(202).json({
+            message: "Transcription started",
         });
     } catch (error) {
         console.error(error);
