@@ -10,7 +10,7 @@ import cookieParser from "cookie-parser";
 const app = express();
 
 const allowedOrigins = [
-    process.env.FRONTEND_URL,
+    process.env.CLIENT_URL,
     "http://localhost:5173",
 ].filter(Boolean);
 
