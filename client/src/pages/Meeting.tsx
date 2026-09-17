@@ -96,9 +96,26 @@ export default function Meeting() {
         try {
             await transcribeMeeting(id);
 
-            const updatedMeeting = await getMeeting(id);
+            const pollInterval = 3000;
+            const maxAttempts = 120;
 
-            setMeeting(updatedMeeting);
+            for (let attempt = 0; attempt < maxAttempts; attempt++) {
+                await new Promise((resolve) => 
+                    setTimeout(resolve, pollInterval)
+                );
+                const updatedMeeting = await getMeeting(id);
+
+                setMeeting(updatedMeeting);
+
+                if (updatedMeeting.transcript) {
+                    setTranscribing(false);
+                    return;
+                }
+            }
+
+            setActionError(
+                "Transcription is taking longer than expected. Please check the meeting again shortly."
+            );  
         } catch (error) {
             console.error(error);
 
@@ -231,9 +248,18 @@ export default function Meeting() {
                                 {meeting.transcript}
                             </div>
 
-                            <PrimaryButton onClick={handleSummarise} disabled={summarising}>
-                                {summarising ? "Generating Notes..." : "Generate Meeting Notes"}
+                            <PrimaryButton
+                                onClick={handleTranscribe}
+                                disabled={transcribing}
+                            >
+                                {transcribing ? "Transcribing..." : "Transcribe"}
                             </PrimaryButton>
+
+                            {transcribing && (
+                                <p className="text-sm text-slate-400">
+                                    Your audio is being processed. This may take a few minutes.
+                                </p>
+                            )}
                         </>
                     ) : (
                         <p className="text-slate-300">No transcript yet.</p>
