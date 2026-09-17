@@ -20,14 +20,13 @@ export function transcribeAudio(audioPath: string): Promise<string> {
             "transcription/transcribe.py"
         );
 
-        const pythonPath = path.join(
-            projectRoot,
-            "transcription/.venv/bin/python"
+        const absoluteAudioPath = path.resolve(
+            serverRoot,
+            audioPath
         );
 
-        const absoluteAudioPath = path.resolve(
-            serverRoot, audioPath
-        );
+        const pythonPath =
+            process.env.PYTHON_PATH || "python3";
 
         const python_process = spawn(
             pythonPath,
