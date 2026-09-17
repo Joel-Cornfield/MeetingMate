@@ -23,11 +23,17 @@ def transcribe(audio_path: str):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python transcribe.py <audio-file>")
+        print(
+            "Usage: python transcribe.py <audio-file>",
+            file = sys.stderr
+        )
         sys.exit(1)
         
     audio_path = sys.argv[1]
     
-    transcript = transcribe(audio_path)
-    
-    print(transcript)
+    try:
+       transcript = transcribe(audio_path)
+       print(transcript) 
+    except Exception as error:
+        print(f"Transcription failed: {error}", file = sys.stderr)
+        sys.exit(1)
