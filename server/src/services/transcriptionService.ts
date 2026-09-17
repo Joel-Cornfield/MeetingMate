@@ -11,10 +11,9 @@ export function transcribeAudio(audioPath: string): Promise<string> {
             "transcription/transcribe.py"
         );
 
-        const absoluteAudioPath = path.resolve(
-            serverRoot,
-            audioPath
-        );
+        const absoluteAudioPath = path.isAbsolute(audioPath)
+            ? audioPath
+            : path.resolve(serverRoot, audioPath);
 
         const pythonPath =
             process.env.PYTHON_PATH || "python3";

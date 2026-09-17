@@ -1,11 +1,25 @@
 import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+const uploadDirectory = path.join(
+    process.cwd(),
+    "uploads",
+    "audio"
+);
+
+fs.mkdirSync(uploadDirectory, {
+    recursive: true,
+})
 
 /**
  * Configure disk storage for incoming audio uploads.
  * Files are timestamped to prevent filename collisions in the destination directory.
  */
 const storage = multer.diskStorage({
-    destination: "uploads/audio",
+    destination: (_req, _file, cb) => {
+        cb(null, uploadDirectory);
+    },
     filename: (_req, file, cb) => {
         // Prepends timestamp to guarantee uniqueness
         const uniqueName = `${Date.now()}-${file.originalname}`;
