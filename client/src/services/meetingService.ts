@@ -53,8 +53,10 @@ export async function uploadAudio(meetingId: string, file: File) {
 }
 
 export async function transcribeMeeting(meetingId: string) {
-    const response = await api.post(`/meetings/${meetingId}/transcribe`);
-    
+    const response = await api.post<{ message: string }>(
+        `/meetings/${meetingId}/transcribe`
+    );
+
     return response.data;
 }
 
