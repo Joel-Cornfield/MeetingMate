@@ -209,7 +209,7 @@ export async function transcribe(
                 message: "Authorization required",
             });
         }
-        
+
         const { id } = req.params;
 
         if (typeof id !== "string") {
@@ -227,43 +227,38 @@ export async function transcribe(
         }
 
         if (!meeting.audioPath) {
-            return res.status(404).json({
+            return res.status(400).json({
                 message: "Meeting does not have an audio file",
             });
         }
 
-        // Start transcription in the background.
-        transcribeAudio(meeting.audioPath)
-            .then(async (transcript) => {
-                await saveTranscript(
-                    id, 
-                    req.userId!,
-                    transcript
-                );
+        console.log(`Starting transcription for meeting ${id}`);
 
-                console.log(
-                    `Transcription completed for meeting ${id}`
-                );
-            })
-            .catch((error) => {
-                console.error(
-                    `Transcription failed for meeting ${id}:`,
-                    error
-                );
-            })
+        const transcript = await transcribeAudio(
+            meeting.audioPath
+        );
 
-        // Respond immediately instead of waiting for Whisper.
-        return res.status(202).json({
-            message: "Transcription started",
+        await saveTranscript(
+            id,
+            req.userId,
+            transcript
+        );
+
+        console.log(`Transcription completed for meeting ${id}`);
+
+        return res.status(200).json({
+            transcript,
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            message: "Internal server error",
+        console.error("Transcription error:", error);
+
+        return res.status(500).json({
+            message: error instanceof Error
+                ? error.message
+                : "Internal server error",
         });
     }
 }
-
 /**
  * POST /api/meetings/:id/summarise
  * Generates a summary for the provided transcript and saves the corresponding summary and action items into the database

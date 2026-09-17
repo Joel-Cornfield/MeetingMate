@@ -96,31 +96,17 @@ export default function Meeting() {
         try {
             await transcribeMeeting(id);
 
-            const pollInterval = 3000;
-            const maxAttempts = 120;
+            const updatedMeeting = await getMeeting(id);
 
-            for (let attempt = 0; attempt < maxAttempts; attempt++) {
-                await new Promise((resolve) => 
-                    setTimeout(resolve, pollInterval)
-                );
-                const updatedMeeting = await getMeeting(id);
-
-                setMeeting(updatedMeeting);
-
-                if (updatedMeeting.transcript) {
-                    setTranscribing(false);
-                    return;
-                }
-            }
-            
-            setActionError(
-                "Transcription is taking longer than expected. Please check the meeting again shortly."
-            );  
+            setMeeting(updatedMeeting);
         } catch (error) {
             console.error(error);
 
             if (axios.isAxiosError(error)) {
-                setActionError(error.response?.data?.message || "Failed to transcribe meeting");
+                setActionError(
+                    error.response?.data?.message ||
+                    "Failed to transcribe meeting"
+                );
             } else {
                 setActionError("Failed to transcribe meeting");
             }
