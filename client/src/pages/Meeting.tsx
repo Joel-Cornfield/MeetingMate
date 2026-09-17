@@ -112,7 +112,7 @@ export default function Meeting() {
                     return;
                 }
             }
-
+            
             setActionError(
                 "Transcription is taking longer than expected. Please check the meeting again shortly."
             );  
@@ -213,9 +213,18 @@ export default function Meeting() {
                     {meeting.audioPath ? (
                         <>
                             <p className="text-sm text-emerald-300">Audio uploaded ✓</p>
-                            <PrimaryButton onClick={handleTranscribe} disabled={transcribing}>
+                            <PrimaryButton
+                                onClick={handleTranscribe}
+                                disabled={transcribing}
+                            >
                                 {transcribing ? "Transcribing..." : "Transcribe"}
                             </PrimaryButton>
+
+                            {transcribing && (
+                                <p className="text-sm text-slate-400">
+                                    Your audio is being processed. This may take a few minutes.
+                                </p>
+                            )}
                         </>
                     ) : (
                         <>
@@ -248,18 +257,9 @@ export default function Meeting() {
                                 {meeting.transcript}
                             </div>
 
-                            <PrimaryButton
-                                onClick={handleTranscribe}
-                                disabled={transcribing}
-                            >
-                                {transcribing ? "Transcribing..." : "Transcribe"}
+                            <PrimaryButton onClick={handleSummarise} disabled={summarising}>
+                                {summarising ? "Generating Notes..." : "Generate Meeting Notes"}
                             </PrimaryButton>
-
-                            {transcribing && (
-                                <p className="text-sm text-slate-400">
-                                    Your audio is being processed. This may take a few minutes.
-                                </p>
-                            )}
                         </>
                     ) : (
                         <p className="text-slate-300">No transcript yet.</p>
