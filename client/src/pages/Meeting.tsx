@@ -221,7 +221,7 @@ export default function Meeting() {
                             <input
                                 id="audio"
                                 type="file"
-                                accept="audio/*.mp3,.wav,.m4a"
+                                accept=".mp3,.wav,.m4a,.webm,.ogg,.aac,.flac"
                                 onChange={handleAudioUpload}
                                 disabled={uploading}
                                 className="hidden"
