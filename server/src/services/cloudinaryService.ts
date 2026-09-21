@@ -23,17 +23,27 @@ export function uploadAudioToCloudinary(
             },
             (error, result) => {
                 if (error) {
-                    console.error("Cloudinary upload failed:", error);
+                    console.error("Cloudinary upload failed");
+                    console.error("Error:", error);
+                    console.error("Error message:", error.message);
+                    console.error("HTTP code:", error.http_code);
+                    console.error("Error name:", error.name);
+
                     reject(error);
                     return;
                 }
 
                 if (!result?.secure_url) {
-                    const uploadError = new Error("Cloudinary upload did not return a URL");
-                    console.error("Cloudinary upload returned no URL:", result);
-                    reject(uploadError);
+                    reject(
+                        new Error("Cloudinary upload did not return a URL")
+                    );
                     return;
                 }
+
+                console.log(
+                    "Cloudinary upload successful:",
+                    result.secure_url
+                );
 
                 resolve(result.secure_url);
             }
