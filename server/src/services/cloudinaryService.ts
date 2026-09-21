@@ -15,7 +15,7 @@ export function uploadAudioToCloudinary(
     return new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
             {
-                resource_type: "video",
+                resource_type: "auto",
                 folder: "meetingmate/audio",
                 public_id: `${Date.now()}-${originalName
                     .replace(/\.[^/.]+$/, "") // strip file extension (cloudinary auto appends it)
