@@ -3,6 +3,7 @@ import { AuthRequest } from "../middleware/authMiddleware.js";
 import { createMeeting, deleteMeeting, getMeetingById, getMeetings, attachAudio, getAudio, saveTranscript, getTranscript, saveSummary } from "../services/meetingService.js";
 import { transcribeAudio } from "../services/transcriptionService.js";
 import { generateMeetingSummary } from "../services/aiService.js";
+import { uploadAudioToCloudinary } from "../services/cloudinaryService.js";
 
 /**
  * POST /api/meetings
@@ -150,7 +151,7 @@ export async function remove(
 
 /**
  * POST /api/meetings/:id/audio
- * Adds an audio path to a meeting if it exists and belongs to the authenticated user
+ * Uploads an audio file to Cloudinary and attaches its URL to the meeting.
  */
 export async function upload(
     req: AuthRequest,
@@ -176,7 +177,11 @@ export async function upload(
             });
         }
 
-        const meeting = await attachAudio(id, req.userId, req.file.path);
+        const audioUrl = await uploadAudioToCloudinary(req.file.buffer, req.file.originalname);
+
+        console.log("Audio uploaded to Cloudinary:", audioUrl);
+
+        const meeting = await attachAudio(id, req.userId, audioUrl);
 
         if (!meeting) {
             return res.status(404).json({
