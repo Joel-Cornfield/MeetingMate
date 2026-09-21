@@ -193,9 +193,9 @@ export async function upload(
             meeting,
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            message: "Internal server error",
+        console.error("Upload error:", error);
+        return res.status(500).json({
+            message: error instanceof Error ? error.message : "Internal server error",
         });
     }
 }

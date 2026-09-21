@@ -18,25 +18,27 @@ export function uploadAudioToCloudinary(
                 resource_type: "auto",
                 folder: "meetingmate/audio",
                 public_id: `${Date.now()}-${originalName
-                    .replace(/\.[^/.]+$/, "") // strip file extension (cloudinary auto appends it)
-                    .replace(/[^a-zA-Z0-9-_]/g, "-")}`, // replace any illegal characters or spaces
+                    .replace(/\.[^/.]+$/, "")
+                    .replace(/[^a-zA-Z0-9-_]/g, "-")}`,
             },
             (error, result) => {
                 if (error) {
+                    console.error("Cloudinary upload failed:", error);
                     reject(error);
                     return;
-                } 
+                }
 
                 if (!result?.secure_url) {
-                    reject(
-                        new Error("Cloudinary upload did not return a URL")
-                    );
+                    const uploadError = new Error("Cloudinary upload did not return a URL");
+                    console.error("Cloudinary upload returned no URL:", result);
+                    reject(uploadError);
                     return;
                 }
 
                 resolve(result.secure_url);
             }
         );
+
         uploadStream.end(buffer);
-    })
+    });
 }
