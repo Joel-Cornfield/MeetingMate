@@ -29,6 +29,15 @@ export function uploadAudioToCloudinary(
                     console.error("HTTP code:", error.http_code);
                     console.error("Error name:", error.name);
 
+                    if (error.http_code === 403) {
+                        reject(
+                            new Error(
+                                "Cloudinary rejected the upload. Check your Cloudinary credentials in Render and verify the account is active and allows uploads."
+                            )
+                        );
+                        return;
+                    }
+
                     reject(error);
                     return;
                 }
