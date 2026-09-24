@@ -1,5 +1,13 @@
-const OLLAMA_URL = "http://localhost:11434/api/generate";
-const OLLAMA_MODEL = "llama3.2:3b";
+
+
+import { GoogleGenAI, Type } from '@google/genai';
+import { env } from '../config/env.js';
+
+const ai = new GoogleGenAI({
+    apiKey: env.GEMINI_API_KEY,
+});
+
+const GEMINI_MODEL = "gemini-3.6-flash";
 
 interface AIResponse {
     summary: string,
@@ -7,10 +15,11 @@ interface AIResponse {
 }
 
 /**
- * Generates a meeting summary and extracts action items from a provided transcript using the local Ollama API.
+ * Generates a meeting summary and extracts action items
+ * from a provided transcript using the Gemini API.
+ *
  * @param transcript - Text content of the meeting transcript to analyze.
- * @returns A promise that resolves to an AIResponse object containing the meeting summary and action items.
- * @throws Will throw an error if the network request fails or response is not ok.
+ * @returns A promise containing the meeting summary and action items.
  */
 export async function generateMeetingSummary(
     transcript: string,
@@ -35,26 +44,36 @@ export async function generateMeetingSummary(
     ${transcript}
     `;
     
-    const response = await fetch(OLLAMA_URL, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
+    const response = await ai.models.generateContent({
+        model: GEMINI_MODEL,
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                    summary: {
+                        type: Type.STRING,
+                        description: "A concise summary of the meeting."
+                    },
+                    actionItems: {
+                        type: Type.ARRAY,
+                        items: {
+                            type: Type.STRING,
+                        },
+                        description: "Action items explicitly mentioned or clearly implied by the meeting.",
+                    },
+                },
+                required: ["summary", "actionItems"],
+            },
         },
-        body: JSON.stringify({
-            model: OLLAMA_MODEL,
-            prompt: prompt,
-            stream: false, // To get single JSON response
-            format: "json",
-        }),
     });
 
-    if (!response.ok) {
-        throw new Error(`Ollama request failed: ${response.status}`);
+    if (!response.text) {
+        throw new Error("Gemini returned an empty response");
     }
 
-    const data = await response.json();
-
-    const result = JSON.parse(data.response) as AIResponse;
+    const result = JSON.parse(response.text) as AIResponse;
 
     return result;
 }
