@@ -3,10 +3,12 @@ import { registerUser, loginUser } from "../services/authService.js";
 import { AuthRequest } from "../middleware/authMiddleware.js";
 import prisma from "../services/prisma.js";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const COOKIE_OPTIONS = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "none" as const,
+    secure: isProduction,
+    sameSite: isProduction ? "none" as const : "lax" as const,
     maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
@@ -153,8 +155,8 @@ export async function logout(
 ) {
     res.clearCookie("token", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "none",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
     });
 
     return res.status(200).json({
