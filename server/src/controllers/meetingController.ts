@@ -320,9 +320,9 @@ export async function summarise(
             meeting: saved,
         })
     } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            message: "Internal server error",
+        console.error("Summarise error:", error);
+        return res.status(500).json({
+            message: error instanceof Error ? error.message : "Internal server error",
         });
     }
 }
