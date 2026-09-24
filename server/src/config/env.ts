@@ -18,6 +18,7 @@ const DATABASE_URL = getRequiredEnv("DATABASE_URL");
 const CLOUDINARY_CLOUD_NAME = getRequiredEnv("CLOUDINARY_CLOUD_NAME");
 const CLOUDINARY_API_KEY = getRequiredEnv("CLOUDINARY_API_KEY");
 const CLOUDINARY_API_SECRET = getRequiredEnv("CLOUDINARY_API_SECRET");
+const GEMINI_API_KEY=getRequiredEnv("GEMINI_API_KEY");
 
 // Export strictly typed constants
 export const env = {
@@ -26,4 +27,5 @@ export const env = {
     CLOUDINARY_CLOUD_NAME,
     CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET,
+    GEMINI_API_KEY,
 };
