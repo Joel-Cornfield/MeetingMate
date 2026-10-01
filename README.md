@@ -14,15 +14,15 @@ Users can create meetings, upload audio recordings, automatically transcribe the
 
 ## Features
 
-* 🔐 User registration and login
-* 🔒 JWT authentication using secure HTTP-only cookies
-* 📝 Create, view and delete meetings
-* 🎙️ Upload meeting recordings
-* ☁️ Cloud-based audio storage
-* 🗣️ Automatic speech-to-text transcription
-* 🤖 AI-generated meeting summaries
-* ☑️ Automatic action item extraction
-* 💾 Persistent meeting data using PostgreSQL
+* User registration and login
+* JWT authentication using secure HTTP-only cookies
+* Create, view and delete meetings
+* Upload meeting recordings
+* Cloud-based audio storage
+* Automatic speech-to-text transcription
+* AI-generated meeting summaries
+* Automatic action item extraction
+* Persistent meeting data using PostgreSQL
 
 ---
 
@@ -197,27 +197,3 @@ MeetingMate is deployed using Render.
 * **Transcription:** faster-whisper
 
 The production frontend is configured to support React Router routes when pages are refreshed directly.
-
----
-
-## What I Learned
-
-Building MeetingMate provided practical experience with:
-
-* Full-stack TypeScript development
-* REST API design
-* Authentication and secure cookies
-* Relational database design
-* File uploads and cloud storage
-* Node.js and Python integration
-* Speech-to-text processing
-* AI API integration
-* Structured AI responses
-* Environment and secret management
-* Production deployment and debugging
-
----
-
-## License
-
-This project was built as a personal portfolio project.
