@@ -182,18 +182,3 @@ npm run dev
 ```
 
 Environment variables are required for the database, authentication, Cloudinary and Gemini API credentials.
-
----
-
-## Deployment
-
-MeetingMate is deployed using Render.
-
-* **Frontend:** React/Vite on Render
-* **Backend:** Node/Express on Render
-* **Database:** Neon PostgreSQL
-* **Audio:** Cloudinary
-* **AI:** Google Gemini
-* **Transcription:** faster-whisper
-
-The production frontend is configured to support React Router routes when pages are refreshed directly.
